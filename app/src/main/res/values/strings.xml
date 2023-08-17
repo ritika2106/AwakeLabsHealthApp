@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <string name="app_name">testpart1</string>
+
+        <string name="starter_msg">What would you like to exercise today?</string>
+
+        <string name="breathing_msg">How many breathing cycles are you up for?</string>
+
+        <string name="seconds_msg">1 cycle = 16 seconds</string>
+
+        <string name="breathing_start">START</string>
+
+        <string name="breathing_stop">STOP</string>
+
+        <string name="inhale">INHALE</string>
+
+        <string name="exhale">EXHALE</string>
+
+        <string name="hold">HOLD</string>
+
+        <string name="relax">Everything has and will always workout!</string>
+
+</resources>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.wear.widget.BoxInsetLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.BreathingActivity">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            app:layout_boxedEdges="all">
+
+            <TextView
+                android:id="@+id/countdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3"
+                android:textColor="#FFD369"
+                android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
+
+            <TextView
+                android:id="@+id/breathingAction"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/ptsans"
+                android:gravity="center_horizontal"
+                android:text="INHALE"
+                android:textColor="#FFD369"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/breathingCircle"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/circle"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/inhaleCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="4"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/holdCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="4"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/exhaleCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="4"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/hold2Count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="4"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/stop"
+                        android:layout_width="56dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:onClick="onPressStop"
+                        android:textSize="10sp"
+                        android:text="@string/breathing_stop"
+                        android:layout_marginTop="10dp"
+                        android:textColor="#FF3131"
+                        android:background="@drawable/custom_red_button"
+                        />
+            </FrameLayout>
+
+            <nl.dionsegijn.konfetti.xml.KonfettiView
+                android:id="@+id/konfettiView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.wear.widget.BoxInsetLayout>
+
+</layout>

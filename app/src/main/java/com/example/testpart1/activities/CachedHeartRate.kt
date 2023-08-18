@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+//creates a template for heart rate information of a single heartrate object
 @Entity(tableName = "heart_rate_db")
 data class CachedHeartRate(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

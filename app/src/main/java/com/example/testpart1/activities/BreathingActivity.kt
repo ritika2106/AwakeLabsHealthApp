@@ -24,6 +24,8 @@ class BreathingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //user input received after being passed through intent
+        //user input : number of cycles user expects
         retrievedCycleCount = intent.getIntExtra("userCycleCount", 1)
 
         binding = BreathingActivityBinding.inflate(layoutInflater)
@@ -36,6 +38,7 @@ class BreathingActivity : ComponentActivity() {
         breathingViewPrep()
     }
 
+    //starts initial countdown to get the user ready for breathing cycles
     private fun breathingViewPrep() {
         startCountdownAnimation(3000, binding.countdown, 3, 0) {
             binding.countdown.visibility = View.INVISIBLE
@@ -44,6 +47,11 @@ class BreathingActivity : ComponentActivity() {
         }
     }
 
+    /*
+    Each stage has its own animation count, text (inhale, exhale, hold) and
+    textview for displaying the animation
+    Each stage has a set duration for background animation
+    */
     private fun totalBreathingCycle() {
         binding.breathingAction.visibility = View.VISIBLE
         binding.breathingCircle.visibility = View.VISIBLE
@@ -93,7 +101,7 @@ class BreathingActivity : ComponentActivity() {
             startCountdownAnimation(stageDuration, countdownTextViews[stageIndex], 4, 0) {
                 countdownTextViews[stageIndex].visibility = View.INVISIBLE
                 stageIndex++ // Move to the next stage
-                animateStage() // Recursive call to animate the next stage
+                animateStage() // recursive call for each stage animation
             }
         }
 
@@ -103,6 +111,8 @@ class BreathingActivity : ComponentActivity() {
 
     data class Stage(val text: String, val count: String)
 
+    //final success message and automatic redirection to main screen after
+    //successfull completion
     private fun onCompleteCycles() {
         binding.breathingCircle.visibility = View.INVISIBLE
         binding.breathingAction.text = getString(R.string.relax)
@@ -119,6 +129,7 @@ class BreathingActivity : ComponentActivity() {
 
         binding.konfettiView.start(party)
 
+        //redirection after 5 seconds to main activity
         val rootLayout = findViewById<View>(R.id.rootLayout)
         rootLayout.postDelayed({
             startActivity(Intent(this, MainActivity::class.java))
@@ -126,6 +137,7 @@ class BreathingActivity : ComponentActivity() {
 
     }
 
+    //separate function of using valueanimator for countdown animation
     private fun startCountdownAnimation(
         duration: Long,
         targetTextView: TextView,
@@ -147,6 +159,7 @@ class BreathingActivity : ComponentActivity() {
         }
     }
 
+    //backgrounf animation
     private fun startBreathingAnimation() {
         val animator = ValueAnimator.ofFloat(0.6f, 0.8f)
         animator.duration = 4000

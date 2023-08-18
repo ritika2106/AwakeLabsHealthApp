@@ -11,13 +11,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
+        //setting a listener to navigate to appropriate activities on click of
+        //any icon
         val mindfulExerciseButton = findViewById<ImageButton>(R.id.brain)
-        mindfulExerciseButton.setOnClickListener{
+        mindfulExerciseButton.setOnClickListener {
             startActivity(Intent(this, BreathingHome::class.java))
         }
 
-        val walkingExerciseButton = findViewById<ImageButton>(R.id.body)
-        walkingExerciseButton.setOnClickListener{
+        val heartRateButton = findViewById<ImageButton>(R.id.body)
+        heartRateButton.setOnClickListener {
             startActivity(Intent(this, ExerciseHome::class.java))
         }
     }

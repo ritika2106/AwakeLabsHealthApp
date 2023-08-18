@@ -42,6 +42,7 @@ class ExerciseHome : ComponentActivity() {
 
     private var exerciseUpdateCallback: ExerciseUpdateCallback? = null
 
+    // Requested permissions
     private val permissions = arrayOf(
         Manifest.permission.BODY_SENSORS
     )
@@ -51,12 +52,14 @@ class ExerciseHome : ComponentActivity() {
         binding = ExerciseActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Initialize Room database and ExerciseClient
         appRoomDb = Room.databaseBuilder(applicationContext, AppRoomDb::class.java, "heart_rate_db")
             .build()
         cachedHeartRateDao = appRoomDb.cachedHeartRateDao()
 
         exerciseClient = HealthServices.getClient(this).exerciseClient
 
+        // Set up UI buttons and their click listeners
         binding.startexercise.setOnClickListener {
             requestPermissions.launch(permissions)
         }
@@ -88,6 +91,7 @@ class ExerciseHome : ComponentActivity() {
 
     }
 
+    // storing cached data in the database every 60 seconds
     private fun storeDataAfterSetTimeDuration() {
 
         // Start storing cached data in the database every 60 seconds
@@ -98,27 +102,34 @@ class ExerciseHome : ComponentActivity() {
         heartRateDataList.clear()
         }
 
+    // insert cached data into the database
     private suspend fun insertCachedDataIntoDb(cachedDataList: List<CachedHeartRate>) {
         // Insert cached data into the database here using the cachedHeartRateDao
         cachedHeartRateDao.insertHeartRateList(cachedDataList)
     }
 
+    //get latest heart rate value
     private suspend fun getCurrentHeartRate(): Double? {
         return heartRateMutex.withLock {
             latestHeartRate
         }
     }
 
+    //update the latest heart rate value with Mutex since heartRate is getting sent and updated
+    //using multiple coroutines
     private suspend fun updateLatestHeartRate(newHeartRate: Double) {
         heartRateMutex.withLock {
             latestHeartRate = newHeartRate
         }
     }
+
+    //lose the current view and return to the main activity
     private fun closeView() {
         stopExercise()
         startActivity(Intent(this, MainActivity::class.java))
     }
 
+    //handle permission request result
     private val requestPermissions = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -130,6 +141,8 @@ class ExerciseHome : ComponentActivity() {
         }
     }
 
+
+    //single exercise session begins
     private fun startExercise() {
         lifecycleScope.launch {
             val exerciseConfig = ExerciseConfig(
@@ -152,6 +165,7 @@ class ExerciseHome : ComponentActivity() {
         }
     }
 
+    //end the current session
     private fun stopExercise() {
         lifecycleScope.launch {
             try {
@@ -171,11 +185,13 @@ class ExerciseHome : ComponentActivity() {
         }
     }
 
+    //register for exercise update callbacks when the activity starts
     override fun onStart() {
         super.onStart()
         registerExerciseUpdates()
     }
 
+    //clearng exercise update callback when the activity stops
     override fun onStop() {
         super.onStop()
         exerciseUpdateCallback?.let {
@@ -183,7 +199,7 @@ class ExerciseHome : ComponentActivity() {
         }
     }
 
-
+    //register exercise update callbacks
     private fun registerExerciseUpdates() {
         exerciseUpdateCallback = object : ExerciseUpdateCallback {
             override fun onExerciseUpdateReceived(update: ExerciseUpdate) {
@@ -206,7 +222,6 @@ class ExerciseHome : ComponentActivity() {
                 dataType: DataType<*, *>,
                 availability: Availability
             ) {
-                // Handle data availability changes if needed
             }
 
 
@@ -221,6 +236,7 @@ class ExerciseHome : ComponentActivity() {
         exerciseClient.setUpdateCallback(exerciseUpdateCallback as ExerciseUpdateCallback)
     }
 
+    //update heartrate for user's visible text view
     private fun updateLocationTextView(heartRate: Double) {
         val heartRateText = "HeartRate: $heartRate BPM"
         binding.heartObserve.text = heartRateText

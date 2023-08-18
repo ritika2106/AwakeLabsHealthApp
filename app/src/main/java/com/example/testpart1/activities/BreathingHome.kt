@@ -22,16 +22,20 @@ class BreathingHome : ComponentActivity() {
         }
     }
 
+    //increasing cycle count from user's end through button click
     fun increaseCycleCount(view: View) {
         updatedCycleCount++;
         displayUpdatedCount(updatedCycleCount)
     }
 
+    //decreasing cycle count from user's end through button click
+    //while making sure the count does not go below 1
     fun decreaseCycleCount(view: View) {
         updatedCycleCount = if(updatedCycleCount > 1) updatedCycleCount - 1 else updatedCycleCount
         displayUpdatedCount(updatedCycleCount)
     }
 
+    //display updated count to user with every click
     private fun displayUpdatedCount(number: Int) {
         val numberOfCycles = findViewById<TextView>(R.id.cycles)
         numberOfCycles.text = number.toString()

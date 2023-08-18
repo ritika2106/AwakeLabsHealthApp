@@ -2,13 +2,10 @@ package com.example.testpart1.activities
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.health.services.client.ExerciseClient
 import androidx.health.services.client.ExerciseUpdateCallback
 import androidx.health.services.client.HealthServices
@@ -20,13 +17,29 @@ import androidx.health.services.client.data.ExerciseLapSummary
 import androidx.health.services.client.data.ExerciseType
 import androidx.health.services.client.data.ExerciseUpdate
 import androidx.lifecycle.lifecycleScope
+import androidx.room.Room
 import com.example.testpart1.databinding.ExerciseActivityBinding
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class ExerciseHome : ComponentActivity() {
 
     private lateinit var exerciseClient: ExerciseClient
     private lateinit var binding: ExerciseActivityBinding
+
+    //for rooom db:
+    private lateinit var cachedHeartRateDao: CachedHeartRateDao
+    private lateinit var appRoomDb: AppRoomDb
+
+    //list for caching
+    private val heartRateDataList = mutableListOf<CachedHeartRate>()
+
+    //making sure that the value of heart rate is always the latest
+    private var latestHeartRate: Double = 0.0
+    private val heartRateMutex = Mutex()
+
     private var exerciseUpdateCallback: ExerciseUpdateCallback? = null
 
     private val permissions = arrayOf(
@@ -38,6 +51,10 @@ class ExerciseHome : ComponentActivity() {
         binding = ExerciseActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        appRoomDb = Room.databaseBuilder(applicationContext, AppRoomDb::class.java, "heart_rate_db")
+            .build()
+        cachedHeartRateDao = appRoomDb.cachedHeartRateDao()
+
         exerciseClient = HealthServices.getClient(this).exerciseClient
 
         binding.startexercise.setOnClickListener {
@@ -47,8 +64,56 @@ class ExerciseHome : ComponentActivity() {
         binding.close.setOnClickListener {
             closeView()
         }
+
+        //caching data and storing data after set time delays
+        cacheDataAfterSetTimeDuration()
+        storeDataAfterSetTimeDuration()
     }
 
+    //caching data in a list every 3 seconds
+    private fun cacheDataAfterSetTimeDuration() {
+            lifecycleScope.launch {
+                while (true) {
+                    val latestHeartRate = getCurrentHeartRate()
+                    if (latestHeartRate != null) {
+                        val heartRateData = CachedHeartRate(
+                            heartRate = latestHeartRate,
+                            timestamp = System.currentTimeMillis()
+                        )
+                        heartRateDataList.add(heartRateData)
+                    }
+                    delay(3000) // Collect data every 3 seconds
+                }
+            }
+
+    }
+
+    private fun storeDataAfterSetTimeDuration() {
+
+        // Start storing cached data in the database every 60 seconds
+        lifecycleScope.launch {
+                insertCachedDataIntoDb(heartRateDataList) // Insert cached data into the database
+                delay(60000) // Store data every 60 seconds
+            }
+        heartRateDataList.clear()
+        }
+
+    private suspend fun insertCachedDataIntoDb(cachedDataList: List<CachedHeartRate>) {
+        // Insert cached data into the database here using the cachedHeartRateDao
+        cachedHeartRateDao.insertHeartRateList(cachedDataList)
+    }
+
+    private suspend fun getCurrentHeartRate(): Double? {
+        return heartRateMutex.withLock {
+            latestHeartRate
+        }
+    }
+
+    private suspend fun updateLatestHeartRate(newHeartRate: Double) {
+        heartRateMutex.withLock {
+            latestHeartRate = newHeartRate
+        }
+    }
     private fun closeView() {
         stopExercise()
         startActivity(Intent(this, MainActivity::class.java))
@@ -118,6 +183,7 @@ class ExerciseHome : ComponentActivity() {
         }
     }
 
+
     private fun registerExerciseUpdates() {
         exerciseUpdateCallback = object : ExerciseUpdateCallback {
             override fun onExerciseUpdateReceived(update: ExerciseUpdate) {
@@ -126,6 +192,9 @@ class ExerciseHome : ComponentActivity() {
                 //Log.e("*******HEART RATE*******", locationUpdates.last().value.toString())
                 if (heartRateUpdates.isNotEmpty()) {
                     val heartRate = heartRateUpdates.last().value
+                    lifecycleScope.launch {
+                        updateLatestHeartRate(heartRate)
+                    }
                     updateLocationTextView(heartRate)
                 }
             }

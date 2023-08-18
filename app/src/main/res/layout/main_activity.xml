@@ -39,7 +39,7 @@
             android:layout_width="52dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:src="@drawable/run" />
+            android:src="@drawable/account_heart" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

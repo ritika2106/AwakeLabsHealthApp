@@ -165,7 +165,7 @@ class BreathingActivity : ComponentActivity() {
         // Cancel the ValueAnimator to prevent memory leaks
         //checking if it has been initialized to avoid any crashes
         //if the activity is destroyed before 'valueAnimator' gets initialized
-        if (::valueAnimator.isInitialized) {
+        if (::valueAnimator.isInitialized  && valueAnimator.isRunning) {
             valueAnimator.cancel()
         }
     }

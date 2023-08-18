@@ -2,7 +2,7 @@
 <resources>
         <string name="app_name">testpart1</string>
 
-        <string name="starter_msg">What would you like to exercise today?</string>
+        <string name="starter_msg">What would you like to keep in check today?</string>
 
         <string name="breathing_msg">How many breathing cycles are you up for?</string>
 
@@ -19,5 +19,11 @@
         <string name="hold">HOLD</string>
 
         <string name="relax">Everything has and will always workout!</string>
+
+        <string name="heartRate_msg">Your heart rate is: </string>
+
+        <string name="step_count">Step Count: %d</string>
+
+        <string name="heartObserve">Are you ready to observe your heartbeat?"</string>
 
 </resources>

@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.testpart1"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.testpart1"
@@ -68,6 +68,11 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("nl.dionsegijn:konfetti-xml:2.0.3")
     implementation("androidx.health:health-services-client:1.1.0-alpha01")
+    implementation("com.google.android.gms:play-services-fitness:20.0.0")
+    implementation("com.google.android.gms:play-services-tasks:18.0.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("com.google.guava:guava:31.0.1-android")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")

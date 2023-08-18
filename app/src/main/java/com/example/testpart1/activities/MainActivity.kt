@@ -11,9 +11,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
-        val button = findViewById<ImageButton>(R.id.brain)
-        button.setOnClickListener{
+        val mindfulExerciseButton = findViewById<ImageButton>(R.id.brain)
+        mindfulExerciseButton.setOnClickListener{
             startActivity(Intent(this, BreathingHome::class.java))
+        }
+
+        val walkingExerciseButton = findViewById<ImageButton>(R.id.body)
+        walkingExerciseButton.setOnClickListener{
+            startActivity(Intent(this, ExerciseHome::class.java))
         }
     }
 

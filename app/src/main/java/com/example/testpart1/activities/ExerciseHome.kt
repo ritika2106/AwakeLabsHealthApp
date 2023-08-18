@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.health.services.client.ExerciseClient
@@ -75,19 +76,19 @@ class ExerciseHome : ComponentActivity() {
 
     //caching data in a list every 3 seconds
     private fun cacheDataAfterSetTimeDuration() {
-            lifecycleScope.launch {
-                while (true) {
-                    val latestHeartRate = getCurrentHeartRate()
-                    if (latestHeartRate != null) {
-                        val heartRateData = CachedHeartRate(
-                            heartRate = latestHeartRate,
-                            timestamp = System.currentTimeMillis()
-                        )
-                        heartRateDataList.add(heartRateData)
-                    }
-                    delay(3000) // Collect data every 3 seconds
+        lifecycleScope.launch {
+            while (true) {
+                val latestHeartRate = getCurrentHeartRate()
+                if (latestHeartRate != null) {
+                    val heartRateData = CachedHeartRate(
+                        heartRate = latestHeartRate,
+                        timestamp = System.currentTimeMillis()
+                    )
+                    heartRateDataList.add(heartRateData)
                 }
+                delay(3000) // Collect data every 3 seconds
             }
+        }
 
     }
 
@@ -96,11 +97,11 @@ class ExerciseHome : ComponentActivity() {
 
         // Start storing cached data in the database every 60 seconds
         lifecycleScope.launch {
-                insertCachedDataIntoDb(heartRateDataList) // Insert cached data into the database
-                delay(60000) // Store data every 60 seconds
-            }
-        heartRateDataList.clear()
+            insertCachedDataIntoDb(heartRateDataList) // Insert cached data into the database
+            delay(60000) // Store data every 60 seconds
         }
+        heartRateDataList.clear()
+    }
 
     // insert cached data into the database
     private suspend fun insertCachedDataIntoDb(cachedDataList: List<CachedHeartRate>) {
@@ -137,7 +138,14 @@ class ExerciseHome : ComponentActivity() {
         if (allPermissionsGranted) {
             startExercise()
         } else {
-            // Handle permission denied
+            //on permissions denied take back to the main activity
+            //let the user know through a toast
+            Toast.makeText(
+                this,
+                "Permission denied, please update permissions to continue",
+                Toast.LENGTH_SHORT
+            ).show()
+            startActivity(Intent(this@ExerciseHome, MainActivity::class.java))
         }
     }
 
@@ -223,7 +231,6 @@ class ExerciseHome : ComponentActivity() {
                 availability: Availability
             ) {
             }
-
 
 
             override fun onRegistered() {

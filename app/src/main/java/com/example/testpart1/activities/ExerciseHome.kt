@@ -1,7 +1,10 @@
 package com.example.testpart1.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -94,13 +97,15 @@ class ExerciseHome : ComponentActivity() {
 
     // storing cached data in the database every 60 seconds
     private fun storeDataAfterSetTimeDuration() {
-
-        // Start storing cached data in the database every 60 seconds
-        lifecycleScope.launch {
-            insertCachedDataIntoDb(heartRateDataList) // Insert cached data into the database
-            delay(60000) // Store data every 60 seconds
+        //only write if there is an existing connection with remote db ideally
+        if(isConnected()) {
+            // Start storing cached data in the database every 60 seconds
+            lifecycleScope.launch {
+                insertCachedDataIntoDb(heartRateDataList) // Insert cached data into the database
+                delay(60000) // Store data every 60 seconds
+            }
+            heartRateDataList.clear()
         }
-        heartRateDataList.clear()
     }
 
     // insert cached data into the database
@@ -247,5 +252,15 @@ class ExerciseHome : ComponentActivity() {
     private fun updateLocationTextView(heartRate: Double) {
         val heartRateText = "HeartRate: $heartRate BPM"
         binding.heartObserve.text = heartRateText
+    }
+
+    // Check if the device is online
+    private fun isConnected(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities != null &&
+                (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
     }
 }

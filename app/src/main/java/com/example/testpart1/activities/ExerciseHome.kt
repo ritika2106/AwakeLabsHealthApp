@@ -20,7 +20,6 @@ import androidx.health.services.client.data.ExerciseLapSummary
 import androidx.health.services.client.data.ExerciseType
 import androidx.health.services.client.data.ExerciseUpdate
 import androidx.lifecycle.lifecycleScope
-import com.example.testpart1.R
 import com.example.testpart1.databinding.ExerciseActivityBinding
 import kotlinx.coroutines.launch
 
